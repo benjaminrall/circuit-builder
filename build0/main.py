@@ -4,18 +4,25 @@ from component import *
 def component(base):
     return copy.deepcopy(base)
 
+# Creating a NOT gate
 map = {
     "inputs": [Input()],
-    "components": [NAND()],
+    "components": [NAND()],     # 'map' created including all inputs, components, and outputs which would be on the screen  (each can be added by user)
     "outputs": [Output()]
 }
 
 map["inputs"][0].link(0, map["components"][0], 0)
-map["inputs"][0].link(0, map["components"][0], 1)
+map["inputs"][0].link(0, map["components"][0], 1)   # Inputs, components, and outputs can be linked together (by user dragging a wire between them)
 map["components"][0].link(0, map["outputs"][0], 0)
 
-not_gate = Component("NOT", (0, 0, 0), 1, 1, map)
+map["inputs"][0].value = (map["inputs"][0].value + 1) % 2   # Input values can be toggled (by user clicking on them)
+output = map["outputs"][0].evaluate()                       # Output values can be evaluated given the current inputs 
+print(map["inputs"][0].value, output)                       # (each time an input or component or link is changed, this is evaluated)
 
+
+not_gate = Component("NOT", (0, 0, 0), 1, 1, map)   # New component can be created from the current map (by user clicking to add the current map as a component)
+
+# Creating an AND gate
 map =   {
     "inputs": [Input(), Input()],
     "components": [NAND(), component(not_gate)],
@@ -29,6 +36,7 @@ map["components"][1].link(0, map["outputs"][0], 0)
 
 and_gate = Component("AND", (0, 0, 0), 2, 1, map)
 
+# Creating an OR gate
 map = {
     "inputs": [Input(), Input()],
     "components": [component(not_gate), component(not_gate), NAND()],
@@ -43,6 +51,7 @@ map["components"][2].link(0, map["outputs"][0], 0)
 
 or_gate = Component("OR", (0, 0, 0), 2, 1, map)
 
+# Creating an XOR gate
 map = {
     "inputs": [Input(), Input()],
     "components": [component(or_gate), NAND(), component(and_gate)],
@@ -59,6 +68,7 @@ map["components"][2].link(0, map["outputs"][0], 0)
 
 xor_gate = Component("XOR", (0, 0, 0), 2, 1, map)
 
+# Creatubg a half adder
 map = {
     "inputs": [Input(), Input()],
     "components": [component(and_gate), component(xor_gate)],
@@ -74,6 +84,7 @@ map["components"][1].link(0, map["outputs"][1], 0)
 
 half_adder = Component("HALF ADDER", (0, 0, 0), 2, 2, map)
 
+# Creating a full adder
 map = {
     "inputs": [Input(), Input(), Input()],
     "components": [component(half_adder), component(half_adder), component(or_gate)],
@@ -91,6 +102,7 @@ map["components"][2].link(0, map["outputs"][0], 0)
 
 full_adder = Component("FULL ADDER", (0, 0, 0), 3, 2, map)
 
+# Creating a 4 bit adder
 map = {
     "inputs": [Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input()],
     "components": [component(full_adder), component(full_adder), component(full_adder), component(full_adder)],
@@ -117,6 +129,7 @@ map["components"][0].link(1, map["outputs"][1], 0)
 
 four_bit_adder = Component("FOUR BIT ADDER", (0, 0, 0), 9, 5, map)
 
+# 4 BIT ADDER DEMONSTRATION
 map = {
     "inputs": [Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input()],
     "components": [component(four_bit_adder)],
