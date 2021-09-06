@@ -1,5 +1,7 @@
 import copy
 from component import *
+import pygame
+from personallib.camera import Camera
 
 def component(base):
     return copy.deepcopy(base)
@@ -129,34 +131,65 @@ map["components"][0].link(1, map["outputs"][1], 0)
 
 four_bit_adder = Component("FOUR BIT ADDER", (0, 0, 0), 9, 5, map)
 
+# Creating an adder & subtracter
+map = {
+    "inputs": [Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input()],
+    "components": [component(xor_gate), component(xor_gate), component(xor_gate), component(xor_gate), component(four_bit_adder)],
+    "outputs": [Output(), Output(), Output(), Output()]
+}
+
+for i in range(4):
+    map["inputs"][i].link(0, map["components"][4], i)
+for i in range(4):
+    map["inputs"][i + 4].link(0, map["components"][i], 0)
+for i in range(4):
+    map["inputs"][8].link(0, map["components"][i], 1)
+map["inputs"][8].link(0, map["components"][4], 8)
+for i in range(4):
+    map["components"][i].link(0, map["components"][4], i + 4)
+for i in range(4):
+    map["components"][4].link(i + 1, map["outputs"][i], 0)
+
+alu = Component("ALU", (0, 0, 0), 9, 4, map)
+
 # 4 BIT ADDER DEMONSTRATION
 map = {
     "inputs": [Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input(), Input()],
-    "components": [component(four_bit_adder)],
-    "outputs": [Output(), Output(), Output(), Output(), Output()]
+    "components": [component(alu)],
+    "outputs": [Output(), Output(), Output(), Output()]
 }
 
 for i in range(9):
     map["inputs"][i].link(0, map["components"][0], i)
-for i in range(5):
+for i in range(4):
     map["components"][0].link(i, map["outputs"][i], 0)
 
-number1 = format(int(input("Enter first number: ")), '04b')
-number2 = format(int(input("Enter second number: ")), '04b')
+d_number1 = int(input("Enter first number: "))
+d_number2 = int(input("Enter second number: "))
+b_number1 = format(d_number1, '04b')
+b_number2 = format(d_number2, '04b')
+
+neg = {0: 0, 1: -8}
 
 # NUMBER 1
-map["inputs"][0].value = int(number1[-4])
-map["inputs"][1].value = int(number1[-3])
-map["inputs"][2].value = int(number1[-2])
-map["inputs"][3].value = int(number1[-1])
+map["inputs"][0].value = int(b_number1[-4])
+map["inputs"][1].value = int(b_number1[-3])
+map["inputs"][2].value = int(b_number1[-2])
+map["inputs"][3].value = int(b_number1[-1])
 # NUMBER 2
-map["inputs"][4].value = int(number2[-4])
-map["inputs"][5].value = int(number2[-3])
-map["inputs"][6].value = int(number2[-2])
-map["inputs"][7].value = int(number2[-1])
-# CARRY
+map["inputs"][4].value = int(b_number2[-4])
+map["inputs"][5].value = int(b_number2[-3])
+map["inputs"][6].value = int(b_number2[-2])
+map["inputs"][7].value = int(b_number2[-1])
+# ADDITION
 map["inputs"][8].value = 0
 out = ""
 for output in map["outputs"]:
     out += f"{output.evaluate()}"
-print(f"{int(out, 2)} ({out})")
+print(f"{d_number1} + {d_number2} = {neg[int(out[0])] + int(out[1:], 2)} ({out})")
+# SUBTRACTION
+map["inputs"][8].value = 1
+out = ""
+for output in map["outputs"]:
+    out += f"{output.evaluate()}"
+print(f"{d_number1} - {d_number2} = {neg[int(out[0])] + int(out[1:], 2)} ({out})")
