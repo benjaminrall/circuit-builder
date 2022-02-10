@@ -70,7 +70,7 @@ map["components"][2].link(0, map["outputs"][0], 0)
 
 xor_gate = Component("XOR", (0, 0, 0), 2, 1, map)
 
-# Creatubg a half adder
+# Creating a half adder
 map = {
     "inputs": [Input(), Input()],
     "components": [component(and_gate), component(xor_gate)],
